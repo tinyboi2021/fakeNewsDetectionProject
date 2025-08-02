@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  fake-news-detector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fake_news_app_dev
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=development
+      - LOG_LEVEL=DEBUG
+      - MODEL_NAME=roberta-base
+    volumes:
+      # Mount source code for hot reload during development
+      - ./app.py:/app/app.py
+      - ./src:/app/src
+      - model_cache:/app/.cache/transformers
+      - huggingface_cache:/app/.cache/huggingface
+      - ./logs:/app/logs
+      - ./data:/app/data
+    networks:
+      - fake-news-network
+    restart: unless-stopped
+    command: python app.py  # Use development server
+
+  redis:
+    image: redis:7-alpine
+    container_name: fake_news_redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_dev:/data
+    networks:
+      - fake-news-network
+    restart: unless-stopped
+
+volumes:
+  model_cache:
+    driver: local
+  huggingface_cache:
+    driver: local
+  redis_data_dev:
+    driver: local
+
+networks:
+  fake-news-network:
+    driver: bridge
