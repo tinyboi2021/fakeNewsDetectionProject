@@ -21,6 +21,15 @@ Date: August 2025
 """
 
 import torch
+if torch.cuda.is_available():
+    device = torch.device('cuda')
+    print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+else:
+    device = torch.device('cpu')
+    print("CUDA not available, using CPU.")
+
+# Be sure ALL model, tensors, and .to(device) are used for training/inference!
+
 import pandas as pd
 import numpy as np
 import re
@@ -92,7 +101,7 @@ class FakeNewsDetector:
 
         return text
 
-    def load_data(self, fake_csv_path=None, true_csv_path=None):
+    def load_data(self, fake_csv_path="/app/src/dataset1/News _dataset/Fake.csv", true_csv_path="/app/src/dataset1/News _dataset/True.csv"):
         """
         Load and prepare the fake news dataset.
 

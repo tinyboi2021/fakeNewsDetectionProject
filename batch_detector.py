@@ -16,6 +16,8 @@ import pandas as pd
 import sys
 from quick_start_detector import QuickFakeNewsDetector
 
+input_file='/app/src/dataset1/News _dataset/Fake.csv'
+output_file='/app/src/dataset1/News _dataset/Output.csv'
 def process_csv(input_file, output_file):
     """
     Process a CSV file with news articles.

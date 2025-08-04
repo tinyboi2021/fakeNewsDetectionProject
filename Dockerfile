@@ -1,51 +1,31 @@
-# Use Python 3.9 slim as base image for efficiency
-FROM python:3.9-slim
-
-# Set maintainer information
+# Use NVIDIA CUDA base image with Python
+FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 LABEL maintainer="Fake News Detection Team"
-LABEL description="RoBERTa-based Fake News Detection Model"
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV TRANSFORMERS_CACHE=/app/.cache/transformers
-ENV HF_HOME=/app/.cache/huggingface
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip python3-setuptools python3-dev git curl && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+RUN python3 -m pip install --upgrade pip
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    git \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+COPY requirements.txt ./
 
-# Create cache directories
-RUN mkdir -p /app/.cache/transformers /app/.cache/huggingface
+# Install PyTorch with CUDA explicitly first
+RUN pip3 install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Then install the rest of the requirements
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+COPY . /app
 
-# Create a non-root user for security
-RUN useradd --create-home --shell /bin/bash appuser && \
-    chown -R appuser:appuser /app
+RUN useradd -ms /bin/bash appuser && chown -R appuser /app
 USER appuser
 
-# Expose port
+ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
-
-# Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Default command
-CMD ["python", "app.py"]
+CMD ["python3", "app.py"]

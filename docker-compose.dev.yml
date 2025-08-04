@@ -13,17 +13,24 @@ services:
       - LOG_LEVEL=DEBUG
       - MODEL_NAME=roberta-base
     volumes:
-      # Mount source code for hot reload during development
       - ./app.py:/app/app.py
       - ./src:/app/src
       - model_cache:/app/.cache/transformers
       - huggingface_cache:/app/.cache/huggingface
       - ./logs:/app/logs
       - ./data:/app/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     networks:
       - fake-news-network
     restart: unless-stopped
-    command: python app.py  # Use development server
+    command: python3 app.py
+    runtime: nvidia  # 👈 Only works in older Compose; can be ignored in newer Compose V2
 
   redis:
     image: redis:7-alpine
