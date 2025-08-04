@@ -1,0 +1,57 @@
+Evaluation Results:
+eval_loss: 0.0015
+eval_accuracy: 0.9998
+eval_runtime: 301.4801
+eval_samples_per_second: 29.7800
+eval_steps_per_second: 1.8640
+epoch: 2.0000
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 562/562 [04:57<00:00,  1.89it/s]
+
+Accuracy: 0.9998
+
+Classification Report:
+              precision    recall  f1-score   support
+
+        Fake       1.00      1.00      1.00      4695
+        Real       1.00      1.00      1.00      4283
+
+    accuracy                           1.00      8978
+   macro avg       1.00      1.00      1.00      8978
+weighted avg       1.00      1.00      1.00      8978
+
+
+Testing predictions:
+------------------------------
+Text: Scientists have discovered that eating chocolate p...
+Prediction: Fake (Confidence: 1.000)
+
+Text: The stock market closed with moderate gains today...
+Prediction: Fake (Confidence: 1.000)
+
+Text: Aliens have invaded Earth and are demanding pizza...
+Prediction: Fake (Confidence: 1.000)
+
+Text: Weather forecast shows rain expected tomorrow...
+Prediction: Fake (Confidence: 1.000)
+
+
+Using Pre-trained Model from HuggingFace
+==================================================
+config.json: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 789/789 [00:00<00:00, 1.23MB/s]pytorch_model.bin: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 499M/499M [01:34<00:00, 5.27MB/s]
+tokenizer_config.json: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 349/349 [00:00<00:00, 2.49MB/s]
+vocab.json: 798kB [00:00, 11.6MB/s]
+merges.txt: 456kB [00:00, 21.0MB/s]                                                                                                                                               | 0.00/499M [00:00<?, ?B/s]
+tokenizer.json: 2.11MB [00:00, 38.5MB/s]
+special_tokens_map.json: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 239/239 [00:00<00:00, 1.69MB/s]
+Device set to use cuda:0   0%|                                                                                                                                                     | 0.00/239 [00:00<?, ?B/s]
+Testing with pre-trained model:
+Text: <title>Scientists cure cancer<content>Amazing brea...
+Prediction: FAKE (Score: 0.991)
+
+Text: <title>Weather Update<content>Tomorrow will be sun...
+Prediction: FAKE (Score: 1.000)
+
+Text: <title>Miracle Diet<content>Lose 50 pounds overnig...
+Prediction: FAKE (Score: 1.000)
+
+model.safetensors: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 499M/499M [01:35<00:00, 5.25MB/s]
