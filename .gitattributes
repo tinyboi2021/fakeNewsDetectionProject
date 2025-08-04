@@ -1,2 +1,1 @@
-trainableModel/fake_news_roberta/* filter=lfs diff=lfs merge=lfs -text
 C:/xampp/htdocs/fakeNewsDetectionProject/trainableModel/fake_news_roberta/** filter=lfs diff=lfs merge=lfs -text
