@@ -8,6 +8,10 @@ MODEL_NAME=roberta-base
 MODEL_CACHE_DIR=/app/.cache
 CACHE_SIZE=100
 
+# Add to your .env file:
+FAKE_NEWS_MODEL=hamzab/roberta-fake-news-classification
+CLICKBAIT_MODEL=valurank/distilroberta-clickbait
+
 # Redis Configuration (if using caching)
 REDIS_HOST=redis
 REDIS_PORT=6379
