@@ -15,7 +15,7 @@ services:
     volumes:
       - ./app.py:/app/app.py
       - ./src:/app/src
-      - ./trainable model:/app/trainable model
+      - ./trainableModel:/app/trainableModel
       - model_cache:/app/.cache/transformers
       - huggingface_cache:/app/.cache/huggingface
       - ./logs:/app/logs

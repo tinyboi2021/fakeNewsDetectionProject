@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
 import datetime
+from datasets import Dataset
 
 warnings.filterwarnings('ignore')
 
@@ -217,39 +218,132 @@ class FakeNewsDetector:
             results.append(result)
         return results
 
+def print_prediction_details(prediction):
+    """Print detailed prediction results to terminal"""
+    print("\n" + "="*60)
+    print("🔍 PREDICTION RESULTS")
+    print("="*60)
+    print(f"📝 Input Text: {prediction['text']}")
+    print(f"🎯 Prediction: {prediction['prediction']}")
+    print(f"🔢 Confidence: {prediction['confidence']:.4f} ({prediction['confidence']*100:.2f}%)")
+    print(f"🚨 Fake Probability: {prediction['fake_probability']:.4f} ({prediction['fake_probability']*100:.2f}%)")
+    print(f"✅ Real Probability: {prediction['real_probability']:.4f} ({prediction['real_probability']*100:.2f}%)")
+    
+    # Visual confidence indicator
+    confidence_level = ""
+    if prediction['confidence'] >= 0.9:
+        confidence_level = "🟢 Very High"
+    elif prediction['confidence'] >= 0.7:
+        confidence_level = "🟡 High"
+    elif prediction['confidence'] >= 0.5:
+        confidence_level = "🟠 Moderate"
+    else:
+        confidence_level = "🔴 Low"
+    
+    print(f"📊 Confidence Level: {confidence_level}")
+    
+    # Add interpretation
+    if prediction['prediction'] == 'Fake':
+        print("⚠️  INTERPRETATION: This content appears to be FAKE NEWS")
+        print("   Recommendation: Verify with reliable sources before sharing")
+    else:
+        print("✅ INTERPRETATION: This content appears to be LEGITIMATE")
+        print("   Recommendation: Content seems credible, but always cross-check important information")
+    
+    print("="*60)
+
+def save_prediction_to_file(prediction, output_file):
+    """Save prediction results to file with enhanced formatting"""
+    with open(output_file, 'a', encoding='utf-8') as f:
+        f.write("="*60 + "\n")
+        f.write(f"Timestamp: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write("="*60 + "\n")
+        f.write(f"Input: {prediction['text']}\n")
+        f.write(f"Prediction: {prediction['prediction']}\n")
+        f.write(f"Confidence: {prediction['confidence']:.4f} ({prediction['confidence']*100:.2f}%)\n")
+        f.write(f"Fake Probability: {prediction['fake_probability']:.4f} ({prediction['fake_probability']*100:.2f}%)\n")
+        f.write(f"Real Probability: {prediction['real_probability']:.4f} ({prediction['real_probability']*100:.2f}%)\n")
+        
+        if prediction['prediction'] == 'Fake':
+            f.write("Interpretation: FAKE NEWS - Verify with reliable sources\n")
+        else:
+            f.write("Interpretation: LEGITIMATE - Content seems credible\n")
+        
+        f.write("\n" + "="*60 + "\n\n")
+
 def main():
-    print("Fake News Detection using RoBERTa")
+    print("🔍 Fake News Detection using RoBERTa")
     print("=" * 50)
 
     detector = FakeNewsDetector()
 
     # Check if saved model exists and load to skip training
     if detector.load_trained_model():
-        print("Using pre-trained model, skipping training.")
+        print("✅ Using pre-trained model, skipping training.")
     else:
-        print("No pre-trained model found, training now...")
+        print("🚀 No pre-trained model found, training now...")
         df = detector.load_data()
-        train_ds, val_ds = detector.prepare_dataset(df)
-        trainer = detector.train_model(train_ds, val_ds, num_epochs=2)
-        detector.evaluate_model(val_ds, trainer)
+        if df is not None:
+            train_ds, val_ds = detector.prepare_dataset(df)
+            trainer = detector.train_model(train_ds, val_ds, num_epochs=2)
+            detector.evaluate_model(val_ds, trainer)
+
+    print("\n🎯 Interactive Fake News Detection")
+    print("Enter news text to analyze. Type 'exit' to quit.")
+    print("-" * 50)
+
+    # Create a single output file for the session
+    session_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    session_output_file = f"prediction_session_{session_timestamp}.txt"
+    
+    # Write session header
+    with open(session_output_file, 'w', encoding='utf-8') as f:
+        f.write("FAKE NEWS DETECTION SESSION\n")
+        f.write(f"Session started: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write("="*60 + "\n\n")
+
+    prediction_count = 0
 
     # User input for fake news detection
     while True:
-        user_input = input("\nEnter a news text to classify (or type 'exit' to quit): ").strip()
-        if user_input.lower() == 'exit':
-            print("Exiting prediction loop.")
-            break
-        prediction = detector.predict(user_input)
-        print(f"Prediction: {prediction['prediction']} (Confidence: {prediction['confidence']:.2f})")
+        try:
+            user_input = input("\n📝 Enter a news text to classify (or type 'exit' to quit): ").strip()
+            if user_input.lower() == 'exit':
+                print("\n👋 Exiting prediction loop.")
+                break
+            
+            if not user_input:
+                print("⚠️  Please enter some text to analyze.")
+                continue
 
-        # Save prediction to file
-        now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"prediction_{now}.txt"
-        with open(output_file, 'a', encoding='utf-8') as f:
-            f.write(f"Input: {user_input}\n")
-            f.write(f"Prediction: {prediction['prediction']}\n")
-            f.write(f"Confidence: {prediction['confidence']}\n\n")
-        print(f"Prediction saved to {output_file}")
+            print("🤔 Analyzing...")
+            prediction = detector.predict(user_input)
+            prediction_count += 1
+            
+            # Print detailed results to terminal
+            print_prediction_details(prediction)
+            
+            # Save to session file
+            save_prediction_to_file(prediction, session_output_file)
+            
+            print(f"💾 Results saved to: {session_output_file}")
+            print(f"📊 Total predictions this session: {prediction_count}")
+            
+        except KeyboardInterrupt:
+            print("\n\n👋 Session interrupted by user. Exiting...")
+            break
+        except Exception as e:
+            print(f"❌ Error occurred: {str(e)}")
+            continue
+
+    # Write session footer
+    with open(session_output_file, 'a', encoding='utf-8') as f:
+        f.write(f"\nSession ended: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Total predictions: {prediction_count}\n")
+        f.write("="*60 + "\n")
+
+    print(f"\n📁 Complete session log saved to: {session_output_file}")
+    print("✨ Thank you for using Fake News Detection!")
 
 if __name__ == "__main__":
     main()

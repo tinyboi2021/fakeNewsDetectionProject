@@ -1,0 +1,32 @@
+FAKE NEWS DETECTION SESSION
+Session started: 2025-10-13 16:24:09
+============================================================
+
+============================================================
+Timestamp: 2025-10-13 16:24:34
+============================================================
+Input: SHOCKING: Local man discovers one weird trick that doctors hate!
+Prediction: Fake
+Confidence: 1.0000 (100.00%)
+Fake Probability: 1.0000 (100.00%)
+Real Probability: 0.0000 (0.00%)
+Interpretation: FAKE NEWS - Verify with reliable sources
+
+============================================================
+
+============================================================
+Timestamp: 2025-10-13 16:24:49
+============================================================
+Input: You Won't Believe What This Celebrity Did Next!
+Prediction: Fake
+Confidence: 0.9999 (99.99%)
+Fake Probability: 0.9999 (99.99%)
+Real Probability: 0.0001 (0.01%)
+Interpretation: FAKE NEWS - Verify with reliable sources
+
+============================================================
+
+
+Session ended: 2025-10-13 16:25:01
+Total predictions: 2
+============================================================
