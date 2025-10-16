@@ -5,11 +5,13 @@ A containerized machine learning application for detecting fake news using trans
 ## 🎯 Quick Start
 
 **For Complete Beginners (New to Docker):**
+
 1. Install Docker Desktop and NVIDIA Container Toolkit
 2. Clone this repository
 3. Run the setup script with GPU support
 
 **For Experienced Users:**
+
 ```bash
 git clone <your-repo>
 cd fake-news-detection
@@ -49,6 +51,7 @@ cd fake-news-detection
 ## 🔧 Prerequisites
 
 ### Must Have:
+
 - **Docker Desktop** (Windows/Mac) with GPU support enabled
 - **NVIDIA GPU** with CUDA support (for training acceleration)
 - **NVIDIA Container Toolkit** for Docker GPU access
@@ -57,6 +60,7 @@ cd fake-news-detection
 - **Internet connection** (for downloading models and datasets)
 
 ### Nice to Have:
+
 - **Python 3.9+** (for local development)
 - **Visual Studio Code** with Docker extension
 - **Postman** or **curl** for API testing
@@ -66,12 +70,14 @@ cd fake-news-detection
 ### Step 1: Install Docker with GPU Support
 
 **Windows:**
+
 1. Download Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop)
 2. Install and restart your computer
 3. Open Docker Desktop → Settings → Resources → Enable "Use WSL2 based engine"
 4. Enable GPU support in Docker Desktop settings
 
 **Linux (Ubuntu/Debian):**
+
 ```bash
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -89,6 +95,7 @@ sudo systemctl restart docker
 ```
 
 **Verify GPU Access:**
+
 ```bash
 docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
 ```
@@ -96,6 +103,7 @@ docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
 ### Step 2: Install Git LFS
 
 **Windows/Mac:**
+
 ```bash
 # Download from https://git-lfs.github.io/ or use package managers
 # For Windows with Chocolatey:
@@ -106,11 +114,13 @@ brew install git-lfs
 ```
 
 **Linux:**
+
 ```bash
 sudo apt-get install git-lfs
 ```
 
 **Initialize Git LFS:**
+
 ```bash
 git lfs install
 ```
@@ -137,6 +147,7 @@ cp .env.example .env
 ### Docker Configuration for GPU
 
 Your `docker-compose.dev.yml` includes GPU support:
+
 ```yaml
 services:
   fake-news-detector:
@@ -156,6 +167,7 @@ services:
 ### Dockerfile with CUDA Support
 
 The project uses NVIDIA CUDA base image:
+
 ```dockerfile
 FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 
@@ -169,6 +181,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 ### GPU Verification in Code
 
 Your training script automatically detects and uses GPU:
+
 ```python
 import torch
 if torch.cuda.is_available():
@@ -190,6 +203,10 @@ else:
 # Access the training container
 docker exec -it fake_news_app_dev bash
 
+# Start containers without rebuilding
+docker-compose -f docker-compose.dev.yml up -d
+
+
 # Navigate to training directory
 cd /app/trainableModel
 
@@ -200,21 +217,25 @@ python fake_news_roberta_detector.py
 ### Training Features
 
 **Automatic Dataset Loading:**
+
 - Uses datasets from `/app/src/dataset1/News_dataset/`
 - Automatically combines Fake.csv and True.csv
 - Preprocesses text data for optimal training
 
 **Checkpoint Support:**
+
 - Training can be paused and resumed
 - Automatic checkpoint saving every epoch
 - Resume from last checkpoint automatically
 
 **Interactive Testing:**
+
 - After training, enter news text to test predictions
 - Real-time feedback on fake/real classification
 - Confidence scores for each prediction
 
 **Result Logging:**
+
 - All predictions saved to timestamped text files
 - Automatic logging for audit trails
 - Easy result sharing and analysis
@@ -251,11 +272,13 @@ docker exec -it fake_news_app_dev python -c "import torch; print('CUDA available
 ```
 
 ### Web Interface
+
 Open http://localhost:8000 in your browser to see the API documentation and test the endpoints.
 
 ### Command Line Testing
 
 **Single Text Analysis:**
+
 ```bash
 curl -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
@@ -265,6 +288,7 @@ curl -X POST http://localhost:8000/predict \
 ```
 
 **Batch Analysis:**
+
 ```bash
 curl -X POST http://localhost:8000/batch_predict \
   -H "Content-Type: application/json" \
@@ -278,6 +302,7 @@ curl -X POST http://localhost:8000/batch_predict \
 ```
 
 **Health Check with GPU Status:**
+
 ```bash
 curl http://localhost:8000/stats
 ```
@@ -306,17 +331,18 @@ python fake_news_roberta_detector.py
 
 ### Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | API documentation homepage |
-| GET | `/health` | Health check and status |
-| GET | `/stats` | System and GPU statistics |
-| POST | `/predict` | Analyze single text |
-| POST | `/batch_predict` | Analyze multiple texts |
+| Method | Endpoint         | Description                |
+| ------ | ---------------- | -------------------------- |
+| GET    | `/`              | API documentation homepage |
+| GET    | `/health`        | Health check and status    |
+| GET    | `/stats`         | System and GPU statistics  |
+| POST   | `/predict`       | Analyze single text        |
+| POST   | `/batch_predict` | Analyze multiple texts     |
 
 ### Enhanced Response Format
 
 **POST /predict**
+
 ```json
 {
   "success": true,
@@ -335,6 +361,7 @@ python fake_news_roberta_detector.py
 ```
 
 **GET /stats**
+
 ```json
 {
   "model_info": {
@@ -356,6 +383,7 @@ python fake_news_roberta_detector.py
 ### Tracking Large Files
 
 The project automatically tracks large model files:
+
 ```bash
 # Large files are already tracked in .gitattributes
 fake_news_roberta/** filter=lfs diff=lfs merge=lfs -text
@@ -403,6 +431,7 @@ git lfs prune
 ### Complete Team Setup
 
 **Team Member Workflow:**
+
 ```bash
 # 1. Clone repository
 git clone <your-repo>
@@ -424,11 +453,12 @@ cd /app/trainableModel
 ### File Synchronization
 
 The project includes live file synchronization:
+
 ```yaml
 volumes:
   - ./app.py:/app/app.py
   - ./src:/app/src
-  - ./trainableModel:/app/trainableModel  # Live sync for training files
+  - ./trainableModel:/app/trainableModel # Live sync for training files
   - model_cache:/app/.cache/transformers
   - ./logs:/app/logs
   - ./data:/app/data
@@ -449,12 +479,14 @@ git lfs pull
 ## 🚀 Deployment
 
 ### Development with GPU
+
 ```bash
 ./setup.sh start-dev
 # Features: GPU acceleration, hot reload, debug logging, live file sync
 ```
 
 ### Production with GPU
+
 ```bash
 ./setup.sh start-prod
 # Features: GPU optimization, Nginx reverse proxy, resource limits
@@ -463,6 +495,7 @@ git lfs pull
 ### Cloud Deployment with GPU
 
 **AWS EC2 with GPU:**
+
 ```bash
 # Launch GPU instance (p3.2xlarge, g4dn.xlarge, etc.)
 # Install NVIDIA drivers and Docker
@@ -489,6 +522,7 @@ git lfs pull
 ### GPU-Related Issues
 
 **1. GPU Not Detected in Container**
+
 ```bash
 # Check GPU support on host
 nvidia-smi
@@ -501,6 +535,7 @@ docker exec -it fake_news_app_dev nvidia-smi
 ```
 
 **2. CUDA Out of Memory**
+
 ```bash
 # Reduce batch size in training
 # Edit fake_news_roberta_detector.py:
@@ -511,6 +546,7 @@ watch -n1 nvidia-smi
 ```
 
 **3. LFS Files Not Downloaded**
+
 ```bash
 # Pull LFS files
 git lfs pull
@@ -523,6 +559,7 @@ git lfs fetch --all
 ```
 
 **4. Docker Build Cache Issues**
+
 ```bash
 # Clean build with no cache
 docker-compose -f docker-compose.dev.yml build --no-cache
@@ -534,6 +571,7 @@ docker system prune -f
 ### Training Issues
 
 **1. Model Files Corrupted**
+
 ```bash
 # Remove broken model directory
 rm -rf trainableModel/fake_news_roberta
@@ -545,6 +583,7 @@ python fake_news_roberta_detector.py
 ```
 
 **2. Dataset Not Found**
+
 ```bash
 # Check dataset paths
 ls -la /app/src/dataset1/News_dataset/
@@ -555,6 +594,7 @@ head /app/src/dataset1/News_dataset/True.csv
 ```
 
 **3. Permission Issues**
+
 ```bash
 # Fix permissions
 docker exec -u 0 -it fake_news_app_dev chown -R appuser:appuser /app
@@ -585,6 +625,7 @@ watch -n1 "docker exec fake_news_app_dev nvidia-smi"
 ## 📊 Performance Optimization
 
 ### GPU Memory Management
+
 ```python
 # In your training code, add these optimizations:
 torch.cuda.empty_cache()  # Clear GPU cache
@@ -592,6 +633,7 @@ torch.backends.cudnn.benchmark = True  # Optimize for consistent input sizes
 ```
 
 ### Docker Resource Limits
+
 ```yaml
 # In docker-compose.yml, add resource limits:
 deploy:
@@ -607,6 +649,7 @@ deploy:
 ```
 
 ### Training Optimization Tips
+
 - Start with smaller batch sizes (8-16)
 - Use gradient accumulation for larger effective batch sizes
 - Enable mixed precision training for faster training
@@ -616,6 +659,7 @@ deploy:
 ## 🤝 Contributing
 
 ### Development Setup
+
 1. Fork the repository
 2. Clone and set up LFS: `git clone <fork> && git lfs pull`
 3. Create feature branch: `git checkout -b feature-name`
@@ -626,6 +670,7 @@ deploy:
 8. Submit Pull Request
 
 ### Guidelines
+
 - Test with both CPU and GPU configurations
 - Ensure LFS files are properly tracked
 - Add GPU memory usage information in PR description
@@ -649,21 +694,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Need Help?
 
 **For GPU setup issues**:
+
 1. Verify NVIDIA drivers: `nvidia-smi`
 2. Check Docker GPU access: `docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi`
 3. Ensure container has GPU access: `docker exec -it <container> nvidia-smi`
 
 **For LFS issues**:
+
 1. Check LFS installation: `git lfs version`
 2. Pull LFS files: `git lfs pull`
 3. Verify LFS tracking: `git lfs ls-files`
 
 **For training issues**:
+
 1. Check logs: `./setup.sh logs`
 2. Monitor GPU: `watch -n1 nvidia-smi`
 3. Access container: `docker exec -it fake_news_app_dev bash`
 
 **Quick help**:
+
 ```bash
 ./setup.sh help
 ```

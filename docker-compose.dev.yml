@@ -8,6 +8,7 @@ services:
     container_name: fake_news_app_dev
     ports:
       - "8000:8000"
+      - "8888:8888"    # Jupyter notebook
     environment:
       - FLASK_ENV=development
       - LOG_LEVEL=DEBUG
