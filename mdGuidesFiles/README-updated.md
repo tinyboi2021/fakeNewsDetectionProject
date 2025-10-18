@@ -98,6 +98,8 @@ sudo systemctl restart docker
 
 ```bash
 docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+
+docker exec -it fake_news_app_dev python3 -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('GPU count:', torch.cuda.device_count()); print('GPU name:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'None')"
 ```
 
 ### Step 2: Install Git LFS
@@ -199,6 +201,9 @@ else:
 ```bash
 # Start the development environment
 ./setup.sh start-dev
+
+# Option 2: Using Docker Compose directly
+docker-compose -f docker-compose.dev.yml up --build -d
 
 # Access the training container
 docker exec -it fake_news_app_dev bash

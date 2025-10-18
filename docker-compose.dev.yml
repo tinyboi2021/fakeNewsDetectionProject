@@ -8,11 +8,13 @@ services:
     container_name: fake_news_app_dev
     ports:
       - "8000:8000"
-      - "8888:8888"    # Jupyter notebook
+      - "8888:8888"
     environment:
       - FLASK_ENV=development
       - LOG_LEVEL=DEBUG
       - MODEL_NAME=roberta-base
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
     volumes:
       - ./app.py:/app/app.py
       - ./src:/app/src
